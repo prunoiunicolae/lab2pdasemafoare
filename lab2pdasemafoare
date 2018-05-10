@@ -1,0 +1,142 @@
+# lab2pdasemafoare
+import threading
+
+from  time import sleep
+
+from collections import deque
+
+import random
+
+
+
+semFree = threading.Semaphore()
+
+semFull = threading.Semaphore()
+
+
+
+mutex = threading.Lock()
+
+
+
+queue = deque()
+
+
+
+def producer() :
+
+    while 1:
+
+        item = random.random() * 100
+
+        print("produce... element %d" % item)
+
+        sleep(5)
+
+
+
+        mutex.acquire()
+
+
+
+        if len(queue)< 15:
+
+
+
+            semFree.release()
+
+
+
+            queue.append(item)
+
+
+
+            semFull.acquire()
+
+
+
+        mutex.release()
+
+
+
+
+
+        #item = produce()
+
+        #down(semFree)
+
+        #enqueue(item)
+
+        #up(semFull)
+
+
+
+
+
+
+
+
+
+def consumer() :
+
+    while 1:
+
+        mutex.acquire()
+
+        if len(queue) > 0 :
+
+
+
+            semFull.release()
+
+
+
+            queue.popleft()
+
+
+
+
+
+            semFree.acquire()
+
+        mutex.release()
+
+        print("consume...")
+
+        sleep(5)
+
+
+
+        #down(semFull)
+
+        #dequeue()
+
+        #up(semFree)
+
+        #consume()
+
+
+
+
+
+queue.append(3)
+
+queue.append(6)
+
+queue.append(4)
+
+
+
+
+
+t1 = threading.Thread(target = producer)
+
+t2 = threading.Thread(target = consumer)
+
+t1.start()
+
+t2.start()
+
+t1.join()
+
+t2.join()
